@@ -38,7 +38,7 @@
   }
   .tapHint{
     margin-top:14px;
-    font-weight:700;
+    font-weight:800;
     color:#7a0030;
     opacity:.95;
     text-shadow:0 6px 20px rgba(0,0,0,.12);
@@ -57,8 +57,8 @@
     justify-content:center;
     width:min(340px,80vw);
     aspect-ratio: 1 / 1;
-    transform: translateY(0);
     transition: transform .12s ease;
+    animation: floaty 2.2s ease-in-out infinite;
   }
   .heartEnvelopeBtn:active{ transform: translateY(2px) scale(.99); }
 
@@ -123,13 +123,9 @@
     font-weight:900;
   }
 
-  /* little bounce */
   @keyframes floaty {
     0%, 100% { transform: translateY(0); }
     50%      { transform: translateY(-10px); }
-  }
-  .heartEnvelopeBtn{
-    animation: floaty 2.2s ease-in-out infinite;
   }
 
   /* ---------- Main card ---------- */
@@ -162,7 +158,6 @@
     from{ transform: translateY(120vh); opacity:0; }
     to  { transform: translateY(0); opacity:1; }
   }
-
   .reveal .stage{ pointer-events:auto; }
 
   h1{
@@ -186,7 +181,7 @@
     padding:12px 20px;
     border-radius:999px;
     font-size:16px;
-    font-weight:800;
+    font-weight:900;
     cursor:pointer;
     user-select:none;
     -webkit-tap-highlight-color: transparent;
@@ -217,7 +212,7 @@
   .result{
     margin-top:18px;
     font-size:18px;
-    font-weight:800;
+    font-weight:900;
     color:#d1003f;
     min-height:28px;
   }
@@ -256,7 +251,22 @@
   }
   .kissOverlay.show{ opacity:1; }
 
-  .kissGif{ width:180px; }
+  .kissRow{
+    display:flex;
+    gap:18px;
+    align-items:center;
+    justify-content:center;
+    padding: 10px 14px;
+    border-radius: 18px;
+    background: rgba(255,255,255,.75);
+    box-shadow: 0 18px 50px rgba(0,0,0,.25);
+    backdrop-filter: blur(8px);
+  }
+  .kissGif{
+    width:170px;
+    max-width: 34vw;
+    border-radius: 14px;
+  }
 
   .lipPrint{
     position:absolute;
@@ -277,10 +287,30 @@
   @keyframes introOut{
     to{ opacity:0; transform: translateY(-20px); pointer-events:none; }
   }
+
+  /* Optional tiny music button */
+  .musicBtn{
+    position: fixed;
+    right: 14px;
+    bottom: 14px;
+    z-index: 20;
+    border: 0;
+    border-radius: 999px;
+    padding: 10px 12px;
+    background: rgba(255,255,255,.85);
+    box-shadow: 0 12px 30px rgba(0,0,0,.18);
+    font-weight: 900;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
 </style>
 </head>
 
 <body>
+
+<!-- Background music (put your file in the repo as music.mp3) -->
+<audio id="bgMusic" src="music.mp3" loop preload="auto"></audio>
+<button class="musicBtn" id="musicToggle" aria-label="Toggle music">🔈</button>
 
 <!-- Intro Screen -->
 <div class="intro" id="intro">
@@ -314,18 +344,20 @@
 
 <div class="hearts" id="hearts"></div>
 
-<!-- Kiss Animation -->
+<!-- Kiss Animation (2 bears) -->
 <div class="kissOverlay" id="kissOverlay">
-  <!-- You can swap this gif link if you want a different one -->
-  <img class="kissGif" alt="kissing gif"
-       src="https://media.tenor.com/1d5O3rV0ZLQAAAAC/kiss-love.gif">
+  <div class="kissRow" aria-hidden="true">
+    <img class="kissGif" alt="cute bears kissing gif 1"
+         src="https://media.tenor.com/2roX3uxz_68AAAAC/bears-kiss.gif">
+    <img class="kissGif" alt="cute bears kissing gif 2"
+         src="https://media.tenor.com/9D0r7bHn0FQAAAAC/cute-bears-love.gif">
+  </div>
   <div class="lipPrint">💋</div>
 </div>
 
 <script>
   const intro = document.getElementById("intro");
   const openBtn = document.getElementById("openBtn");
-  const stage = document.getElementById("stage");
   const card = document.getElementById("card");
 
   const noBtn = document.getElementById("noBtn");
@@ -334,18 +366,55 @@
   const hearts = document.getElementById("hearts");
   const kissOverlay = document.getElementById("kissOverlay");
 
+  // Music
+  const bgMusic = document.getElementById("bgMusic");
+  const musicToggle = document.getElementById("musicToggle");
+  let musicOn = false;
+
+  function setMusicIcon() {
+    musicToggle.textContent = musicOn ? "🔊" : "🔈";
+  }
+
+  async function startMusic() {
+    try {
+      bgMusic.volume = 0.25; // soft romantic volume
+      await bgMusic.play();
+      musicOn = true;
+      setMusicIcon();
+    } catch (e) {
+      // If autoplay is blocked, user can tap the toggle.
+      musicOn = false;
+      setMusicIcon();
+    }
+  }
+
+  musicToggle.addEventListener("click", async () => {
+    try {
+      if (!musicOn) {
+        await startMusic();
+      } else {
+        bgMusic.pause();
+        musicOn = false;
+        setMusicIcon();
+      }
+    } catch (e) {}
+  });
+
   let attempts = 0;
   let opened = false;
 
   // ---------- Intro -> Reveal ----------
-  function openLetter() {
+  async function openLetter() {
     if (opened) return;
     opened = true;
 
     intro.classList.add("hide");
     document.body.classList.add("reveal");
 
-    // Place No initially near Yes (side-by-side) and ready to dodge
+    // Start music on a user gesture (works on iPads/iPhones too)
+    await startMusic();
+
+    // Reset + place No beside Yes first
     attempts = 0;
     resetButtons();
   }
@@ -358,7 +427,6 @@
 
   // ---------- No button logic ----------
   function resetButtons(){
-    // Start side-by-side
     yesBtn.style.transform = "translate(-50%, -50%) scale(1)";
     noBtn.style.left = "60%";
     noBtn.style.top = "50%";
@@ -415,7 +483,6 @@
   // Run away on everything (hover/tap/click)
   ["mouseenter", "mousedown", "click", "touchstart"].forEach(evt => {
     noBtn.addEventListener(evt, (e) => {
-      // only start dodging after the letter is opened
       if (!opened) return;
       if (evt === "touchstart") e.preventDefault();
       moveNoButton();
@@ -455,6 +522,9 @@
     kissOverlay.classList.add("show");
     setTimeout(() => kissOverlay.classList.remove("show"), 2000);
   }
+
+  // Init icon
+  setMusicIcon();
 </script>
 
 </body>
