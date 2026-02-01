@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Be My Valentine?</title>
+  <style>
+    :root {
+      --bg1: #ff5a86;
+      --bg2: #ffb3c7;
+      --card: rgba(255,255,255,.92);
+      --text: #1f1f1f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at top, var(--bg2), var(--bg1));
+      overflow: hidden;
+    }
+    .card {
+      width: min(560px, 92vw);
+      background: var(--card);
+      border-radius: 20px;
+      padding: 28px 22px;
+      box-shadow: 0 18px 60px rgba(0,0,0,.25);
+      text-align: center;
+      position: relative;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 5vw, 40px);
+      color: #d1003f;
+      letter-spacing: .5px;
+    }
+    p {
+      margin: 0 0 18px;
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.4;
+    }
+    .buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      position: relative;
+      min-height: 70px; /* gives space for the No button to move */
+    }
+    button {
+      border: 0;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .12s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button:active { transform: scale(.98); }
+
+    #yesBtn {
+      background: #19c37d;
+      color: white;
+      box-shadow: 0 10px 20px rgba(25,195,125,.35);
+    }
+
+    /* No button is positioned absolutely so it can “run away” */
+    #noBtn {
+      background: #ff3b5c;
+      color: white;
+      box-shadow: 0 10px 20px rgba(255,59,92,.35);
+      position: absolute;
+      left: 50%;
+      top: 60%;
+      transform: translate(-50%, -50%);
+    }
+
+    .result {
+      margin-top: 16px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #d1003f;
+      min-height: 28px;
+    }
+
+    .hearts {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+    }
+    .heart {
+      position: absolute;
+      font-size: 22px;
+      animation: floatUp linear forwards;
+      opacity: .9;
+      filter: drop-shadow(0 10px 8px rgba(0,0,0,.15));
+    }
+    @keyframes floatUp {
+      from { transform: translateY(0) scale(1); opacity: .95; }
+      to   { transform: translateY(-120vh) scale(1.4); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="card">
+    <h1>Anzia, will you be my Valentine? 💘</h1>
+    <p>
+      I’m asking nicely… but I’m also prepared to be dramatic about it 😌
+    </p>
+
+    <div class="buttons">
+      <button id="yesBtn">Yes 💖</button>
+      <button id="noBtn" aria-label="No">No 😭</button>
+    </div>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <div class="hearts" id="hearts"></div>
+
+  <script>
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+    const card = document.getElementById("card");
+    const result = document.getElementById("result");
+    const hearts = document.getElementById("hearts");
+
+    let attempts = 0;
+
+    // Move "No" somewhere inside the card, never off-screen.
+    function moveNoButton() {
+      attempts++;
+
+      // AFTER 10 TRIES → NO BECOMES YES
+      if (attempts >= 10) {
+        noBtn.textContent = "Okay fine… YES 💖";
+        noBtn.style.background = "#19c37d";
+        noBtn.style.boxShadow = "0 10px 20px rgba(25,195,125,.35)";
+        noBtn.onclick = () => yesBtn.click();
+        return;
+      }
+
+      // YES GROWS each attempt
+      const yesScale = Math.min(1 + attempts * 0.08, 2.3);
+      yesBtn.style.transform = `scale(${yesScale})`;
+
+      // NO SHRINKS each attempt
+      const noScale = Math.max(1 - attempts * 0.06, 0.35);
+
+      // Make "No" feel slippery (helps on iPads too)
+      noBtn.style.transition = "left 0.08s linear, top 0.08s linear";
+
+      const cardRect = card.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+
+      const padding = 14;
+
+      const minX = padding;
+      const maxX = cardRect.width - btnRect.width - padding;
+
+      // Keep it mostly in lower half so it looks intentional
+      const minY = cardRect.height * 0.55;
+      const maxY = cardRect.height - btnRect.height - padding;
+
+      const x = Math.random() * (maxX - minX) + minX;
+      const y = Math.random() * (maxY - minY) + minY;
+
+      noBtn.style.left = `${x}px`;
+      noBtn.style.top = `${y}px`;
+      noBtn.style.transform = `translate(0, 0) scale(${noScale})`;
+    }
+
+    // RUN AWAY EVENTS: hover, click, mouse down, and touch
+    noBtn.addEventListener("mouseenter", moveNoButton);
+    noBtn.addEventListener("mousedown", moveNoButton);
+    noBtn.addEventListener("click", moveNoButton);
+    noBtn.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      moveNoButton();
+    }, { passive: false });
+
+    // YES CLICK
+    yesBtn.addEventListener("click", () => {
+      result.textContent = "YAYYYY Anzia 💖 You’re my Valentine!!! 🥰💘";
+      popHearts();
+
+      noBtn.disabled = true;
+      noBtn.style.opacity = 0.4;
+      noBtn.style.cursor = "not-allowed";
+    });
+
+    // Floating hearts
+    function popHearts() {
+      for (let i = 0; i < 25; i++) {
+        const span = document.createElement("span");
+        span.className = "heart";
+        span.textContent = Math.random() > 0.5 ? "💖" : "💘";
+        span.style.left = Math.random() * 100 + "vw";
+        span.style.bottom = "-30px";
+        span.style.animationDuration = (2.2 + Math.random() * 1.6) + "s";
+        span.style.fontSize = (18 + Math.random() * 20) + "px";
+        hearts.appendChild(span);
+        span.addEventListener("animationend", () => span.remove());
+      }
+    }
+
+    // Initial move so "No" isn't centered
+    moveNoButton();
+  </script>
+</body>
+</html>
