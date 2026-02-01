@@ -1,219 +1,461 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Be My Valentine?</title>
-  <style>
-    :root {
-      --bg1: #ff5a86;
-      --bg2: #ffb3c7;
-      --card: rgba(255,255,255,.92);
-      --text: #1f1f1f;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: radial-gradient(circle at top, var(--bg2), var(--bg1));
-      overflow: hidden;
-    }
-    .card {
-      width: min(560px, 92vw);
-      background: var(--card);
-      border-radius: 20px;
-      padding: 28px 22px;
-      box-shadow: 0 18px 60px rgba(0,0,0,.25);
-      text-align: center;
-      position: relative;
-    }
-    h1 {
-      margin: 0 0 8px;
-      font-size: clamp(28px, 5vw, 40px);
-      color: #d1003f;
-      letter-spacing: .5px;
-    }
-    p {
-      margin: 0 0 18px;
-      color: var(--text);
-      font-size: 16px;
-      line-height: 1.4;
-    }
-    .buttons {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-top: 14px;
-      position: relative;
-      min-height: 70px; /* gives space for the No button to move */
-    }
-    button {
-      border: 0;
-      padding: 12px 18px;
-      border-radius: 999px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform .12s ease;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-    button:active { transform: scale(.98); }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Be My Valentine?</title>
 
-    #yesBtn {
-      background: #19c37d;
-      color: white;
-      box-shadow: 0 10px 20px rgba(25,195,125,.35);
-    }
+<style>
+  :root{
+    --pink1:#ff5a86;
+    --pink2:#ffb3c7;
+    --card:#ffffff;
+    --shadow: 0 20px 60px rgba(0,0,0,.25);
+  }
 
-    /* No button is positioned absolutely so it can “run away” */
-    #noBtn {
-      background: #ff3b5c;
-      color: white;
-      box-shadow: 0 10px 20px rgba(255,59,92,.35);
-      position: absolute;
-      left: 50%;
-      top: 60%;
-      transform: translate(-50%, -50%);
-    }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+    background:radial-gradient(circle at top,var(--pink2),var(--pink1));
+    overflow:hidden;
+  }
 
-    .result {
-      margin-top: 16px;
-      font-size: 18px;
-      font-weight: 700;
-      color: #d1003f;
-      min-height: 28px;
-    }
+  /* ---------- Intro screen ---------- */
+  .intro{
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:5;
+  }
+  .introInner{
+    text-align:center;
+    width:min(620px,92vw);
+    padding:20px;
+  }
+  .tapHint{
+    margin-top:14px;
+    font-weight:700;
+    color:#7a0030;
+    opacity:.95;
+    text-shadow:0 6px 20px rgba(0,0,0,.12);
+  }
 
-    .hearts {
-      pointer-events: none;
-      position: fixed;
-      inset: 0;
-      overflow: hidden;
-    }
-    .heart {
-      position: absolute;
-      font-size: 22px;
-      animation: floatUp linear forwards;
-      opacity: .9;
-      filter: drop-shadow(0 10px 8px rgba(0,0,0,.15));
-    }
-    @keyframes floatUp {
-      from { transform: translateY(0) scale(1); opacity: .95; }
-      to   { transform: translateY(-120vh) scale(1.4); opacity: 0; }
-    }
-  </style>
+  .heartEnvelopeBtn{
+    border:0;
+    background:transparent;
+    cursor:pointer;
+    user-select:none;
+    -webkit-tap-highlight-color: transparent;
+    padding:0;
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:min(340px,80vw);
+    aspect-ratio: 1 / 1;
+    transform: translateY(0);
+    transition: transform .12s ease;
+  }
+  .heartEnvelopeBtn:active{ transform: translateY(2px) scale(.99); }
+
+  .heart{
+    position:absolute;
+    inset:0;
+    display:grid;
+    place-items:center;
+    font-size: clamp(150px, 28vw, 240px);
+    filter: drop-shadow(0 18px 30px rgba(0,0,0,.25));
+  }
+
+  /* Envelope */
+  .envelope{
+    position:absolute;
+    width: 62%;
+    height: 44%;
+    bottom: 16%;
+    left: 50%;
+    transform: translateX(-50%);
+    background:#fff;
+    border-radius:14px;
+    box-shadow: 0 14px 30px rgba(0,0,0,.18);
+    overflow:hidden;
+  }
+  .envelope:before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background: linear-gradient(135deg, rgba(255,90,134,.12), rgba(255,179,199,.12));
+  }
+  .envLine{
+    position:absolute;
+    inset:0;
+    border:2px solid rgba(209,0,63,.18);
+    border-radius:14px;
+    pointer-events:none;
+  }
+  .flap{
+    position:absolute;
+    left:0; right:0;
+    top:0;
+    height:58%;
+    background:#fff;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    border-bottom:2px solid rgba(209,0,63,.18);
+    transform-origin: top center;
+  }
+  .seal{
+    position:absolute;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    background: #ff3b5c;
+    left:50%;
+    top:52%;
+    transform: translate(-50%,-50%);
+    box-shadow: 0 10px 18px rgba(255,59,92,.35);
+    display:grid;
+    place-items:center;
+    color:white;
+    font-weight:900;
+  }
+
+  /* little bounce */
+  @keyframes floaty {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-10px); }
+  }
+  .heartEnvelopeBtn{
+    animation: floaty 2.2s ease-in-out infinite;
+  }
+
+  /* ---------- Main card ---------- */
+  .stage{
+    position:fixed;
+    inset:0;
+    display:grid;
+    place-items:center;
+    z-index:3;
+    pointer-events:none; /* enabled after intro */
+  }
+
+  .card{
+    width:min(560px,92vw);
+    background: var(--card);
+    border-radius:22px;
+    padding:28px 22px;
+    box-shadow: var(--shadow);
+    text-align:center;
+    position:relative;
+    transform: translateY(120vh);
+    opacity: 0;
+  }
+
+  /* Slide-up reveal */
+  .reveal .card{
+    animation: slideUp .75s cubic-bezier(.2,.9,.2,1) forwards;
+  }
+  @keyframes slideUp{
+    from{ transform: translateY(120vh); opacity:0; }
+    to  { transform: translateY(0); opacity:1; }
+  }
+
+  .reveal .stage{ pointer-events:auto; }
+
+  h1{
+    margin:0 0 10px;
+    color:#d1003f;
+    font-size:clamp(26px,5vw,38px);
+    letter-spacing:.3px;
+  }
+  p{
+    margin:0 0 18px;
+    color:#1f1f1f;
+  }
+
+  .buttons{
+    position:relative;
+    height:90px;
+  }
+
+  button.choice{
+    border:none;
+    padding:12px 20px;
+    border-radius:999px;
+    font-size:16px;
+    font-weight:800;
+    cursor:pointer;
+    user-select:none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform .12s ease;
+  }
+  button.choice:active{ transform: translate(-50%,-50%) scale(.98); }
+
+  #yesBtn{
+    background:#19c37d;
+    color:white;
+    position:absolute;
+    left:40%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    box-shadow: 0 10px 20px rgba(25,195,125,.35);
+  }
+
+  #noBtn{
+    background:#ff3b5c;
+    color:white;
+    position:absolute;
+    left:60%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    box-shadow: 0 10px 20px rgba(255,59,92,.35);
+  }
+
+  .result{
+    margin-top:18px;
+    font-size:18px;
+    font-weight:800;
+    color:#d1003f;
+    min-height:28px;
+  }
+
+  /* Hearts floating */
+  .hearts{
+    pointer-events:none;
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+    z-index:2;
+  }
+  .heartFloat{
+    position:absolute;
+    font-size:22px;
+    animation: floatUp linear forwards;
+    filter: drop-shadow(0 10px 8px rgba(0,0,0,.15));
+  }
+  @keyframes floatUp{
+    from { transform: translateY(0) scale(1); opacity: .95; }
+    to   { transform: translateY(-120vh) scale(1.4); opacity: 0; }
+  }
+
+  /* Kiss overlay */
+  .kissOverlay{
+    position:fixed;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:rgba(0,0,0,.25);
+    z-index:10;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .28s;
+  }
+  .kissOverlay.show{ opacity:1; }
+
+  .kissGif{ width:180px; }
+
+  .lipPrint{
+    position:absolute;
+    font-size:92px;
+    opacity:0;
+    animation: lipFade 2s forwards;
+  }
+  @keyframes lipFade{
+    0%{opacity:0;transform:scale(.5);}
+    40%{opacity:1;transform:scale(1);}
+    100%{opacity:0;transform:scale(1.2);}
+  }
+
+  /* Fade intro out when opening */
+  .intro.hide{
+    animation: introOut .45s ease forwards;
+  }
+  @keyframes introOut{
+    to{ opacity:0; transform: translateY(-20px); pointer-events:none; }
+  }
+</style>
 </head>
+
 <body>
+
+<!-- Intro Screen -->
+<div class="intro" id="intro">
+  <div class="introInner">
+    <button class="heartEnvelopeBtn" id="openBtn" aria-label="Open envelope">
+      <div class="heart">💗</div>
+      <div class="envelope" aria-hidden="true">
+        <div class="flap"></div>
+        <div class="envLine"></div>
+        <div class="seal">♡</div>
+      </div>
+    </button>
+    <div class="tapHint">Tap the heart to open your letter 💌</div>
+  </div>
+</div>
+
+<!-- Main Stage -->
+<div class="stage" id="stage">
   <div class="card" id="card">
     <h1>Anzia, will you be my Valentine? 💘</h1>
-    <p>
-      I’m asking nicely… but I’m also prepared to be dramatic about it 😌
-    </p>
+    <p>I’m asking nicely 😌💖</p>
 
     <div class="buttons">
-      <button id="yesBtn">Yes 💖</button>
-      <button id="noBtn" aria-label="No">No 😭</button>
+      <button class="choice" id="yesBtn">Yes 💖</button>
+      <button class="choice" id="noBtn">No 😭</button>
     </div>
 
     <div class="result" id="result"></div>
   </div>
+</div>
 
-  <div class="hearts" id="hearts"></div>
+<div class="hearts" id="hearts"></div>
 
-  <script>
-    const noBtn = document.getElementById("noBtn");
-    const yesBtn = document.getElementById("yesBtn");
-    const card = document.getElementById("card");
-    const result = document.getElementById("result");
-    const hearts = document.getElementById("hearts");
+<!-- Kiss Animation -->
+<div class="kissOverlay" id="kissOverlay">
+  <!-- You can swap this gif link if you want a different one -->
+  <img class="kissGif" alt="kissing gif"
+       src="https://media.tenor.com/1d5O3rV0ZLQAAAAC/kiss-love.gif">
+  <div class="lipPrint">💋</div>
+</div>
 
-    let attempts = 0;
+<script>
+  const intro = document.getElementById("intro");
+  const openBtn = document.getElementById("openBtn");
+  const stage = document.getElementById("stage");
+  const card = document.getElementById("card");
 
-    // Move "No" somewhere inside the card, never off-screen.
-    function moveNoButton() {
-      attempts++;
+  const noBtn = document.getElementById("noBtn");
+  const yesBtn = document.getElementById("yesBtn");
+  const result = document.getElementById("result");
+  const hearts = document.getElementById("hearts");
+  const kissOverlay = document.getElementById("kissOverlay");
 
-      // AFTER 10 TRIES → NO BECOMES YES
-      if (attempts >= 10) {
-        noBtn.textContent = "Okay fine… YES 💖";
-        noBtn.style.background = "#19c37d";
-        noBtn.style.boxShadow = "0 10px 20px rgba(25,195,125,.35)";
-        noBtn.onclick = () => yesBtn.click();
-        return;
-      }
+  let attempts = 0;
+  let opened = false;
 
-      // YES GROWS each attempt
-      const yesScale = Math.min(1 + attempts * 0.08, 2.3);
-      yesBtn.style.transform = `scale(${yesScale})`;
+  // ---------- Intro -> Reveal ----------
+  function openLetter() {
+    if (opened) return;
+    opened = true;
 
-      // NO SHRINKS each attempt
-      const noScale = Math.max(1 - attempts * 0.06, 0.35);
+    intro.classList.add("hide");
+    document.body.classList.add("reveal");
 
-      // Make "No" feel slippery (helps on iPads too)
-      noBtn.style.transition = "left 0.08s linear, top 0.08s linear";
+    // Place No initially near Yes (side-by-side) and ready to dodge
+    attempts = 0;
+    resetButtons();
+  }
 
-      const cardRect = card.getBoundingClientRect();
-      const btnRect = noBtn.getBoundingClientRect();
+  openBtn.addEventListener("click", openLetter);
+  openBtn.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    openLetter();
+  }, { passive: false });
 
-      const padding = 14;
+  // ---------- No button logic ----------
+  function resetButtons(){
+    // Start side-by-side
+    yesBtn.style.transform = "translate(-50%, -50%) scale(1)";
+    noBtn.style.left = "60%";
+    noBtn.style.top = "50%";
+    noBtn.style.transform = "translate(-50%, -50%) scale(1)";
+    noBtn.textContent = "No 😭";
+    noBtn.style.background = "#ff3b5c";
+    noBtn.style.boxShadow = "0 10px 20px rgba(255,59,92,.35)";
+    noBtn.disabled = false;
+    noBtn.style.opacity = 1;
+    noBtn.style.cursor = "pointer";
+    noBtn.onclick = null;
+  }
 
-      const minX = padding;
-      const maxX = cardRect.width - btnRect.width - padding;
+  function moveNoButton() {
+    attempts++;
 
-      // Keep it mostly in lower half so it looks intentional
-      const minY = cardRect.height * 0.55;
-      const maxY = cardRect.height - btnRect.height - padding;
-
-      const x = Math.random() * (maxX - minX) + minX;
-      const y = Math.random() * (maxY - minY) + minY;
-
-      noBtn.style.left = `${x}px`;
-      noBtn.style.top = `${y}px`;
-      noBtn.style.transform = `translate(0, 0) scale(${noScale})`;
+    // After 10 tries -> No becomes Yes
+    if (attempts >= 10) {
+      noBtn.textContent = "Okay fine… YES 💖";
+      noBtn.style.background = "#19c37d";
+      noBtn.style.boxShadow = "0 10px 20px rgba(25,195,125,.35)";
+      noBtn.onclick = () => yesBtn.click();
+      return;
     }
 
-    // RUN AWAY EVENTS: hover, click, mouse down, and touch
-    noBtn.addEventListener("mouseenter", moveNoButton);
-    noBtn.addEventListener("mousedown", moveNoButton);
-    noBtn.addEventListener("click", moveNoButton);
-    noBtn.addEventListener("touchstart", (e) => {
-      e.preventDefault();
+    // Yes grows
+    const yesScale = Math.min(1 + attempts * 0.08, 2.3);
+    yesBtn.style.transform = `translate(-50%, -50%) scale(${yesScale})`;
+
+    // No shrinks
+    const noScale = Math.max(1 - attempts * 0.06, 0.35);
+
+    // slippery movement
+    noBtn.style.transition = "left 0.08s linear, top 0.08s linear, transform 0.08s linear";
+
+    const rect = card.getBoundingClientRect();
+    const btnRect = noBtn.getBoundingClientRect();
+    const padding = 14;
+
+    const minX = padding;
+    const maxX = rect.width - btnRect.width - padding;
+
+    const minY = rect.height * 0.55;
+    const maxY = rect.height - btnRect.height - padding;
+
+    const x = Math.random() * (maxX - minX) + minX;
+    const y = Math.random() * (maxY - minY) + minY;
+
+    noBtn.style.left = `${x}px`;
+    noBtn.style.top = `${y}px`;
+    noBtn.style.transform = `translate(0, 0) scale(${noScale})`;
+  }
+
+  // Run away on everything (hover/tap/click)
+  ["mouseenter", "mousedown", "click", "touchstart"].forEach(evt => {
+    noBtn.addEventListener(evt, (e) => {
+      // only start dodging after the letter is opened
+      if (!opened) return;
+      if (evt === "touchstart") e.preventDefault();
       moveNoButton();
-    }, { passive: false });
+    }, { passive: evt !== "touchstart" });
+  });
 
-    // YES CLICK
-    yesBtn.addEventListener("click", () => {
-      result.textContent = "YAYYYY Anzia 💖 You’re my Valentine!!! 🥰💘";
-      popHearts();
+  // ---------- Yes click ----------
+  yesBtn.addEventListener("click", () => {
+    if (!opened) return;
 
-      noBtn.disabled = true;
-      noBtn.style.opacity = 0.4;
-      noBtn.style.cursor = "not-allowed";
-    });
+    result.textContent = "YAYYYY Anzia 💖 You’re my Valentine!!! 🥰";
+    popHearts();
+    playKiss();
 
-    // Floating hearts
-    function popHearts() {
-      for (let i = 0; i < 25; i++) {
-        const span = document.createElement("span");
-        span.className = "heart";
-        span.textContent = Math.random() > 0.5 ? "💖" : "💘";
-        span.style.left = Math.random() * 100 + "vw";
-        span.style.bottom = "-30px";
-        span.style.animationDuration = (2.2 + Math.random() * 1.6) + "s";
-        span.style.fontSize = (18 + Math.random() * 20) + "px";
-        hearts.appendChild(span);
-        span.addEventListener("animationend", () => span.remove());
-      }
+    noBtn.disabled = true;
+    noBtn.style.opacity = 0.4;
+    noBtn.style.cursor = "not-allowed";
+  });
+
+  // ---------- Hearts ----------
+  function popHearts() {
+    for (let i = 0; i < 26; i++) {
+      const span = document.createElement("span");
+      span.className = "heartFloat";
+      span.textContent = Math.random() > 0.5 ? "💖" : "💘";
+      span.style.left = Math.random() * 100 + "vw";
+      span.style.bottom = "-30px";
+      span.style.animationDuration = (2.2 + Math.random() * 1.6) + "s";
+      span.style.fontSize = (18 + Math.random() * 20) + "px";
+      hearts.appendChild(span);
+      span.addEventListener("animationend", () => span.remove());
     }
+  }
 
-    // Initial move so "No" isn't centered
-    moveNoButton();
-  </script>
+  // ---------- Kiss overlay + lip print ----------
+  function playKiss() {
+    kissOverlay.classList.add("show");
+    setTimeout(() => kissOverlay.classList.remove("show"), 2000);
+  }
+</script>
+
 </body>
 </html>
