@@ -1,530 +1,363 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Be My Valentine?</title>
 
 <style>
-  :root{
-    --pink1:#ff5a86;
-    --pink2:#ffb3c7;
-    --card:#ffffff;
-    --shadow: 0 20px 60px rgba(0,0,0,.25);
-  }
+body{
+margin:0;
+min-height:100vh;
+font-family:"Comic Sans MS","Trebuchet MS",cursive;
+background:radial-gradient(circle at top,#ffb3c7,#ff5a86);
+overflow:hidden;
+}
 
-  *{ box-sizing:border-box; }
-  body{
-    margin:0;
-    min-height:100vh;
-    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
-    background:radial-gradient(circle at top,var(--pink2),var(--pink1));
-    overflow:hidden;
-  }
+*{box-sizing:border-box}
 
-  /* ---------- Intro screen ---------- */
-  .intro{
-    position:fixed;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    z-index:5;
-  }
-  .introInner{
-    text-align:center;
-    width:min(620px,92vw);
-    padding:20px;
-  }
-  .tapHint{
-    margin-top:14px;
-    font-weight:800;
-    color:#7a0030;
-    opacity:.95;
-    text-shadow:0 6px 20px rgba(0,0,0,.12);
-  }
+.card{
+width:min(560px,92vw);
+background:white;
+border-radius:22px;
+padding:28px;
+box-shadow:0 20px 60px rgba(0,0,0,.25);
+text-align:center;
+position:relative;
+}
 
-  .heartEnvelopeBtn{
-    border:0;
-    background:transparent;
-    cursor:pointer;
-    user-select:none;
-    -webkit-tap-highlight-color: transparent;
-    padding:0;
-    position:relative;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    width:min(340px,80vw);
-    aspect-ratio: 1 / 1;
-    transition: transform .12s ease;
-    animation: floaty 2.2s ease-in-out infinite;
-  }
-  .heartEnvelopeBtn:active{ transform: translateY(2px) scale(.99); }
+h1{
+margin:0 0 10px;
+color:#d1003f;
+font-size:clamp(26px,5vw,38px);
+}
 
-  .heart{
-    position:absolute;
-    inset:0;
-    display:grid;
-    place-items:center;
-    font-size: clamp(150px, 28vw, 240px);
-    filter: drop-shadow(0 18px 30px rgba(0,0,0,.25));
-  }
+p{margin-bottom:18px}
 
-  /* Envelope */
-  .envelope{
-    position:absolute;
-    width: 62%;
-    height: 44%;
-    bottom: 16%;
-    left: 50%;
-    transform: translateX(-50%);
-    background:#fff;
-    border-radius:14px;
-    box-shadow: 0 14px 30px rgba(0,0,0,.18);
-    overflow:hidden;
-  }
-  .envelope:before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background: linear-gradient(135deg, rgba(255,90,134,.12), rgba(255,179,199,.12));
-  }
-  .envLine{
-    position:absolute;
-    inset:0;
-    border:2px solid rgba(209,0,63,.18);
-    border-radius:14px;
-    pointer-events:none;
-  }
-  .flap{
-    position:absolute;
-    left:0; right:0;
-    top:0;
-    height:58%;
-    background:#fff;
-    clip-path: polygon(0 0, 100% 0, 50% 100%);
-    border-bottom:2px solid rgba(209,0,63,.18);
-    transform-origin: top center;
-  }
-  .seal{
-    position:absolute;
-    width: 44px;
-    height: 44px;
-    border-radius: 999px;
-    background: #ff3b5c;
-    left:50%;
-    top:52%;
-    transform: translate(-50%,-50%);
-    box-shadow: 0 10px 18px rgba(255,59,92,.35);
-    display:grid;
-    place-items:center;
-    color:white;
-    font-weight:900;
-  }
+.stage{
+position:fixed;
+inset:0;
+display:grid;
+place-items:center;
+pointer-events:none;
+}
 
-  @keyframes floaty {
-    0%, 100% { transform: translateY(0); }
-    50%      { transform: translateY(-10px); }
-  }
+.reveal .stage{pointer-events:auto;}
 
-  /* ---------- Main card ---------- */
-  .stage{
-    position:fixed;
-    inset:0;
-    display:grid;
-    place-items:center;
-    z-index:3;
-    pointer-events:none; /* enabled after intro */
-  }
+.card{
+transform:translateY(120vh);
+opacity:0;
+}
 
-  .card{
-    width:min(560px,92vw);
-    background: var(--card);
-    border-radius:22px;
-    padding:28px 22px;
-    box-shadow: var(--shadow);
-    text-align:center;
-    position:relative;
-    transform: translateY(120vh);
-    opacity: 0;
-  }
+.reveal .card{
+animation:slideUp .8s forwards;
+}
 
-  /* Slide-up reveal */
-  .reveal .card{
-    animation: slideUp .75s cubic-bezier(.2,.9,.2,1) forwards;
-  }
-  @keyframes slideUp{
-    from{ transform: translateY(120vh); opacity:0; }
-    to  { transform: translateY(0); opacity:1; }
-  }
-  .reveal .stage{ pointer-events:auto; }
+@keyframes slideUp{
+to{transform:translateY(0);opacity:1;}
+}
 
-  h1{
-    margin:0 0 10px;
-    color:#d1003f;
-    font-size:clamp(26px,5vw,38px);
-    letter-spacing:.3px;
-  }
-  p{
-    margin:0 0 18px;
-    color:#1f1f1f;
-  }
+.buttons{
+position:relative;
+height:90px;
+}
 
-  .buttons{
-    position:relative;
-    height:90px;
-  }
+button{
+border:none;
+padding:12px 20px;
+border-radius:999px;
+font-size:16px;
+font-weight:900;
+cursor:pointer;
+}
 
-  button.choice{
-    border:none;
-    padding:12px 20px;
-    border-radius:999px;
-    font-size:16px;
-    font-weight:900;
-    cursor:pointer;
-    user-select:none;
-    -webkit-tap-highlight-color: transparent;
-    transition: transform .12s ease;
-  }
-  button.choice:active{ transform: translate(-50%,-50%) scale(.98); }
+#yesBtn{
+background:#19c37d;
+color:white;
+position:absolute;
+left:40%;
+top:50%;
+transform:translate(-50%,-50%);
+}
 
-  #yesBtn{
-    background:#19c37d;
-    color:white;
-    position:absolute;
-    left:40%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    box-shadow: 0 10px 20px rgba(25,195,125,.35);
-  }
+#noBtn{
+background:#ff3b5c;
+color:white;
+position:absolute;
+left:60%;
+top:50%;
+transform:translate(-50%,-50%);
+}
 
-  #noBtn{
-    background:#ff3b5c;
-    color:white;
-    position:absolute;
-    left:60%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    box-shadow: 0 10px 20px rgba(255,59,92,.35);
-  }
+.result{
+margin-top:16px;
+font-size:18px;
+font-weight:900;
+color:#d1003f;
+min-height:28px;
+}
 
-  .result{
-    margin-top:18px;
-    font-size:18px;
-    font-weight:900;
-    color:#d1003f;
-    min-height:28px;
-  }
+.hearts{
+pointer-events:none;
+position:fixed;
+inset:0;
+}
 
-  /* Hearts floating */
-  .hearts{
-    pointer-events:none;
-    position:fixed;
-    inset:0;
-    overflow:hidden;
-    z-index:2;
-  }
-  .heartFloat{
-    position:absolute;
-    font-size:22px;
-    animation: floatUp linear forwards;
-    filter: drop-shadow(0 10px 8px rgba(0,0,0,.15));
-  }
-  @keyframes floatUp{
-    from { transform: translateY(0) scale(1); opacity: .95; }
-    to   { transform: translateY(-120vh) scale(1.4); opacity: 0; }
-  }
+.heart{
+position:absolute;
+font-size:22px;
+animation:floatUp linear forwards;
+}
 
-  /* Kiss overlay */
-  .kissOverlay{
-    position:fixed;
-    inset:0;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:rgba(0,0,0,.25);
-    z-index:10;
-    opacity:0;
-    pointer-events:none;
-    transition:opacity .28s;
-  }
-  .kissOverlay.show{ opacity:1; }
+@keyframes floatUp{
+from{transform:translateY(0);opacity:1;}
+to{transform:translateY(-120vh);opacity:0;}
+}
 
-  .kissRow{
-    display:flex;
-    gap:18px;
-    align-items:center;
-    justify-content:center;
-    padding: 10px 14px;
-    border-radius: 18px;
-    background: rgba(255,255,255,.75);
-    box-shadow: 0 18px 50px rgba(0,0,0,.25);
-    backdrop-filter: blur(8px);
-  }
-  .kissGif{
-    width:170px;
-    max-width: 34vw;
-    border-radius: 14px;
-  }
+/* INTRO HEART */
 
-  .lipPrint{
-    position:absolute;
-    font-size:92px;
-    opacity:0;
-    animation: lipFade 2s forwards;
-  }
-  @keyframes lipFade{
-    0%{opacity:0;transform:scale(.5);}
-    40%{opacity:1;transform:scale(1);}
-    100%{opacity:0;transform:scale(1.2);}
-  }
+.intro{
+position:fixed;
+inset:0;
+display:grid;
+place-items:center;
+z-index:5;
+}
 
-  /* Fade intro out when opening */
-  .intro.hide{
-    animation: introOut .45s ease forwards;
-  }
-  @keyframes introOut{
-    to{ opacity:0; transform: translateY(-20px); pointer-events:none; }
-  }
+.heartBtn{
+font-size:200px;
+background:none;
+border:none;
+cursor:pointer;
+animation:bounce 2s infinite;
+}
 
-  /* Optional tiny music button */
-  .musicBtn{
-    position: fixed;
-    right: 14px;
-    bottom: 14px;
-    z-index: 20;
-    border: 0;
-    border-radius: 999px;
-    padding: 10px 12px;
-    background: rgba(255,255,255,.85);
-    box-shadow: 0 12px 30px rgba(0,0,0,.18);
-    font-weight: 900;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
+@keyframes bounce{
+50%{transform:translateY(-12px);}
+}
+
+.intro.hide{
+opacity:0;
+pointer-events:none;
+transition:.4s;
+}
+
+/* KISS */
+
+.kissOverlay{
+position:fixed;
+inset:0;
+display:flex;
+justify-content:center;
+align-items:center;
+background:rgba(0,0,0,.3);
+opacity:0;
+pointer-events:none;
+transition:.3s;
+z-index:10;
+}
+
+.kissOverlay.show{opacity:1;}
+
+.kissGif{width:150px;border-radius:16px;margin:10px;}
+
+.lipPrint{
+position:absolute;
+font-size:90px;
+animation:lip 2s forwards;
+}
+
+@keyframes lip{
+0%{opacity:0;transform:scale(.5);}
+40%{opacity:1;}
+100%{opacity:0;transform:scale(1.2);}
+}
+
+/* FINAL PHOTO */
+
+.finalSection{
+margin-top:22px;
+display:none;
+flex-direction:column;
+align-items:center;
+gap:14px;
+}
+
+.finalSection.show{
+display:flex;
+animation:popIn .9s forwards;
+}
+
+@keyframes popIn{
+0%{transform:scale(.4);opacity:0;}
+70%{transform:scale(1.1);}
+100%{transform:scale(1);opacity:1;}
+}
+
+.usPhoto{
+width:min(320px,80vw);
+border-radius:22px;
+box-shadow:
+0 0 0 6px #ff5a86,
+0 0 35px #ff5a86,
+0 25px 70px rgba(0,0,0,.45);
+}
+
+.loveText{
+font-size:34px;
+font-weight:900;
+color:#ff2f6d;
+letter-spacing:1px;
+text-shadow:
+0 0 6px #ffd1dc,
+0 0 14px #ff5a86,
+0 0 28px #ff5a86;
+animation:pulse 1.4s infinite;
+}
+
+@keyframes pulse{
+0%{transform:scale(1);}
+50%{transform:scale(1.08);}
+100%{transform:scale(1);}
+}
+
+/* MUSIC BUTTON */
+
+.musicBtn{
+position:fixed;
+right:14px;
+bottom:14px;
+background:white;
+border:none;
+border-radius:999px;
+padding:10px;
+font-size:18px;
+cursor:pointer;
+z-index:20;
+}
 </style>
 </head>
 
 <body>
 
-<!-- Background music (put your file in the repo as music.mp3) -->
-<audio id="bgMusic" src="music.mp3" loop preload="auto"></audio>
-<button class="musicBtn" id="musicToggle" aria-label="Toggle music">🔈</button>
+<audio id="bgMusic" src="music.mp3" loop></audio>
+<button class="musicBtn" id="musicBtn">🔈</button>
 
-<!-- Intro Screen -->
+<!-- INTRO -->
 <div class="intro" id="intro">
-  <div class="introInner">
-    <button class="heartEnvelopeBtn" id="openBtn" aria-label="Open envelope">
-      <div class="heart">💗</div>
-      <div class="envelope" aria-hidden="true">
-        <div class="flap"></div>
-        <div class="envLine"></div>
-        <div class="seal">♡</div>
-      </div>
-    </button>
-    <div class="tapHint">Tap the heart to open your letter 💌</div>
-  </div>
+<button class="heartBtn" id="openBtn">💗</button>
 </div>
 
-<!-- Main Stage -->
-<div class="stage" id="stage">
-  <div class="card" id="card">
-    <h1>Anzia, will you be my Valentine? 💘</h1>
-    <p>I’m asking nicely 😌💖</p>
+<!-- MAIN -->
+<div class="stage">
+<div class="card" id="card">
 
-    <div class="buttons">
-      <button class="choice" id="yesBtn">Yes 💖</button>
-      <button class="choice" id="noBtn">No 😭</button>
-    </div>
+<h1>Anzia, will you be my Valentine? 💘</h1>
+<p>I’m asking nicely 😌💖</p>
 
-    <div class="result" id="result"></div>
-  </div>
+<div class="buttons">
+<button id="yesBtn">Yes 💖</button>
+<button id="noBtn">No 😭</button>
+</div>
+
+<div class="result" id="result"></div>
+
+<!-- FINAL PHOTO -->
+<div class="finalSection" id="finalSection">
+<img src="us.jpg" class="usPhoto">
+<div class="loveText">I Love You ❤️</div>
+</div>
+
+</div>
 </div>
 
 <div class="hearts" id="hearts"></div>
 
-<!-- Kiss Animation (2 bears) -->
+<!-- KISS -->
 <div class="kissOverlay" id="kissOverlay">
-  <div class="kissRow" aria-hidden="true">
-    <img class="kissGif" alt="cute bears kissing gif 1"
-         src="https://media.tenor.com/2roX3uxz_68AAAAC/bears-kiss.gif">
-    <img class="kissGif" alt="cute bears kissing gif 2"
-         src="https://media.tenor.com/9D0r7bHn0FQAAAAC/cute-bears-love.gif">
-  </div>
-  <div class="lipPrint">💋</div>
+<img class="kissGif" src="https://media.tenor.com/2roX3uxz_68AAAAC/bears-kiss.gif">
+<img class="kissGif" src="https://media.tenor.com/9D0r7bHn0FQAAAAC/cute-bears-love.gif">
+<div class="lipPrint">💋</div>
 </div>
 
 <script>
-  const intro = document.getElementById("intro");
-  const openBtn = document.getElementById("openBtn");
-  const card = document.getElementById("card");
+const intro=document.getElementById("intro");
+const openBtn=document.getElementById("openBtn");
+const card=document.getElementById("card");
+const noBtn=document.getElementById("noBtn");
+const yesBtn=document.getElementById("yesBtn");
+const result=document.getElementById("result");
+const hearts=document.getElementById("hearts");
+const kiss=document.getElementById("kissOverlay");
+const finalSection=document.getElementById("finalSection");
 
-  const noBtn = document.getElementById("noBtn");
-  const yesBtn = document.getElementById("yesBtn");
-  const result = document.getElementById("result");
-  const hearts = document.getElementById("hearts");
-  const kissOverlay = document.getElementById("kissOverlay");
+const music=document.getElementById("bgMusic");
+const musicBtn=document.getElementById("musicBtn");
 
-  // Music
-  const bgMusic = document.getElementById("bgMusic");
-  const musicToggle = document.getElementById("musicToggle");
-  let musicOn = false;
+let attempts=0;
+let opened=false;
 
-  function setMusicIcon() {
-    musicToggle.textContent = musicOn ? "🔊" : "🔈";
-  }
+openBtn.onclick=()=>{
+opened=true;
+intro.classList.add("hide");
+document.body.classList.add("reveal");
+music.volume=.25;
+music.play();
+musicBtn.textContent="🔊";
+};
 
-  async function startMusic() {
-    try {
-      bgMusic.volume = 0.25; // soft romantic volume
-      await bgMusic.play();
-      musicOn = true;
-      setMusicIcon();
-    } catch (e) {
-      // If autoplay is blocked, user can tap the toggle.
-      musicOn = false;
-      setMusicIcon();
-    }
-  }
+musicBtn.onclick=()=>{
+if(music.paused){music.play();musicBtn.textContent="🔊";}
+else{music.pause();musicBtn.textContent="🔈";}
+};
 
-  musicToggle.addEventListener("click", async () => {
-    try {
-      if (!musicOn) {
-        await startMusic();
-      } else {
-        bgMusic.pause();
-        musicOn = false;
-        setMusicIcon();
-      }
-    } catch (e) {}
-  });
+function moveNo(){
+attempts++;
 
-  let attempts = 0;
-  let opened = false;
+if(attempts>=10){
+noBtn.textContent="Okay fine… YES 💖";
+noBtn.style.background="#19c37d";
+noBtn.onclick=()=>yesBtn.click();
+return;
+}
 
-  // ---------- Intro -> Reveal ----------
-  async function openLetter() {
-    if (opened) return;
-    opened = true;
+yesBtn.style.transform=`translate(-50%,-50%) scale(${1+attempts*.08})`;
+noBtn.style.transform=`scale(${Math.max(1-attempts*.06,.4)})`;
 
-    intro.classList.add("hide");
-    document.body.classList.add("reveal");
+const x=Math.random()*200+40;
+const y=Math.random()*60+40;
+noBtn.style.left=x+"px";
+noBtn.style.top=y+"px";
+}
 
-    // Start music on a user gesture (works on iPads/iPhones too)
-    await startMusic();
+["mouseenter","mousedown","click","touchstart"].forEach(e=>{
+noBtn.addEventListener(e,(ev)=>{
+if(!opened) return;
+ev.preventDefault();
+moveNo();
+});
+});
 
-    // Reset + place No beside Yes first
-    attempts = 0;
-    resetButtons();
-  }
+yesBtn.onclick=()=>{
+result.textContent="YAYYYY Anzia 💖 You’re my Valentine!!! 🥰";
+finalSection.classList.add("show");
+kiss.classList.add("show");
+setTimeout(()=>kiss.classList.remove("show"),2000);
+spawnHearts();
+};
 
-  openBtn.addEventListener("click", openLetter);
-  openBtn.addEventListener("touchstart", (e) => {
-    e.preventDefault();
-    openLetter();
-  }, { passive: false });
-
-  // ---------- No button logic ----------
-  function resetButtons(){
-    yesBtn.style.transform = "translate(-50%, -50%) scale(1)";
-    noBtn.style.left = "60%";
-    noBtn.style.top = "50%";
-    noBtn.style.transform = "translate(-50%, -50%) scale(1)";
-    noBtn.textContent = "No 😭";
-    noBtn.style.background = "#ff3b5c";
-    noBtn.style.boxShadow = "0 10px 20px rgba(255,59,92,.35)";
-    noBtn.disabled = false;
-    noBtn.style.opacity = 1;
-    noBtn.style.cursor = "pointer";
-    noBtn.onclick = null;
-  }
-
-  function moveNoButton() {
-    attempts++;
-
-    // After 10 tries -> No becomes Yes
-    if (attempts >= 10) {
-      noBtn.textContent = "Okay fine… YES 💖";
-      noBtn.style.background = "#19c37d";
-      noBtn.style.boxShadow = "0 10px 20px rgba(25,195,125,.35)";
-      noBtn.onclick = () => yesBtn.click();
-      return;
-    }
-
-    // Yes grows
-    const yesScale = Math.min(1 + attempts * 0.08, 2.3);
-    yesBtn.style.transform = `translate(-50%, -50%) scale(${yesScale})`;
-
-    // No shrinks
-    const noScale = Math.max(1 - attempts * 0.06, 0.35);
-
-    // slippery movement
-    noBtn.style.transition = "left 0.08s linear, top 0.08s linear, transform 0.08s linear";
-
-    const rect = card.getBoundingClientRect();
-    const btnRect = noBtn.getBoundingClientRect();
-    const padding = 14;
-
-    const minX = padding;
-    const maxX = rect.width - btnRect.width - padding;
-
-    const minY = rect.height * 0.55;
-    const maxY = rect.height - btnRect.height - padding;
-
-    const x = Math.random() * (maxX - minX) + minX;
-    const y = Math.random() * (maxY - minY) + minY;
-
-    noBtn.style.left = `${x}px`;
-    noBtn.style.top = `${y}px`;
-    noBtn.style.transform = `translate(0, 0) scale(${noScale})`;
-  }
-
-  // Run away on everything (hover/tap/click)
-  ["mouseenter", "mousedown", "click", "touchstart"].forEach(evt => {
-    noBtn.addEventListener(evt, (e) => {
-      if (!opened) return;
-      if (evt === "touchstart") e.preventDefault();
-      moveNoButton();
-    }, { passive: evt !== "touchstart" });
-  });
-
-  // ---------- Yes click ----------
-  yesBtn.addEventListener("click", () => {
-    if (!opened) return;
-
-    result.textContent = "YAYYYY Anzia 💖 You’re my Valentine!!! 🥰";
-    popHearts();
-    playKiss();
-
-    noBtn.disabled = true;
-    noBtn.style.opacity = 0.4;
-    noBtn.style.cursor = "not-allowed";
-  });
-
-  // ---------- Hearts ----------
-  function popHearts() {
-    for (let i = 0; i < 26; i++) {
-      const span = document.createElement("span");
-      span.className = "heartFloat";
-      span.textContent = Math.random() > 0.5 ? "💖" : "💘";
-      span.style.left = Math.random() * 100 + "vw";
-      span.style.bottom = "-30px";
-      span.style.animationDuration = (2.2 + Math.random() * 1.6) + "s";
-      span.style.fontSize = (18 + Math.random() * 20) + "px";
-      hearts.appendChild(span);
-      span.addEventListener("animationend", () => span.remove());
-    }
-  }
-
-  // ---------- Kiss overlay + lip print ----------
-  function playKiss() {
-    kissOverlay.classList.add("show");
-    setTimeout(() => kissOverlay.classList.remove("show"), 2000);
-  }
-
-  // Init icon
-  setMusicIcon();
+function spawnHearts(){
+for(let i=0;i<30;i++){
+let h=document.createElement("span");
+h.className="heart";
+h.textContent=Math.random()>.5?"💖":"💘";
+h.style.left=Math.random()*100+"vw";
+h.style.bottom="-20px";
+h.style.animationDuration=(2+Math.random()*2)+"s";
+hearts.appendChild(h);
+h.onanimationend=()=>h.remove();
+}
+}
 </script>
 
 </body>
